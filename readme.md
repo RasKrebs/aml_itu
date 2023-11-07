@@ -1,7 +1,7 @@
 # Focus Fumblers
 ### Classifying Distracted Drivers
 A repository for everything related to the exam project of Advanced Machine Learning at IT University of Copenhagen
-___
+
 ## Setting up project
 To setup the project properly, data must first be downloaded. The data used for this project is `Distracted Driver Detection` dataset released in relation to a [State Farm Kaggle Competition](https://www.kaggle.com/competitions/state-farm-distracted-driver-detection/overview). To download the data, you will first need to setup kaggle CLI, extract the necessary API credentials and approve competition rules. If you have done this previously, skip to step see step 3, if not, follow the steps below 
 
