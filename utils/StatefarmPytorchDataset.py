@@ -9,14 +9,14 @@ import os
 
 # Custom PyTorch Dataset Class
 class StateFarmDataset(Dataset):
-    def __init__(self, config, transform=None, target_transform=None, type:str = None):
+    def __init__(self, config, *, transform=None, target_transform = None, split = 'full'):
         """
         Custom PyTorch Dataset Class.
         Args:
             config (dict): configuration dictionary. Loaded using load_config() function from utils/helpers.py
             transform (callable, optional): Optional transform to be applied on a sample.
             target_transform (callable, optional): Optional transform to be applied on a label.
-            type (callable, optional): Optional specification of type of dataset. Can be either 'train', 'test' or None, which includes all.
+            split (callable, optional): Optional specification of type of dataset. Can be either 'train', 'test' or None, which includes all.
         """
         
         # Ensuring directory corresponds to root of repo
@@ -29,17 +29,20 @@ class StateFarmDataset(Dataset):
         self.metadata = pd.read_csv(self.config['dataset']['data'])
         
         # Extracting training or test data
-        if type == 'train':
+        if split == 'train':
             self.metadata = self.metadata[-self.metadata['subject'].isin(self.test_subjects)]
-        elif type == 'test':
+            self.split = 'Train'
+        elif split == 'test':
             self.metadata = self.metadata[self.metadata['subject'].isin(self.test_subjects)]
+            self.split = 'Test'
+        elif split == 'full':
+            self.split = 'Full'
         else:
-            pass
+            raise ValueError('split argument must be either "train", "test" or "full", not {}'.format(split))
+
         
         # Class mappings
         self.id_to_class = self.config['dataset']['class_mapping']
-        
-        # Appending target column with mapped class names
         self.metadata['target'] = self.metadata['classname'].map(self.id_to_class)
         
         # Path to img directory
@@ -79,6 +82,7 @@ class StateFarmDataset(Dataset):
         return image, label
     
     def display_classes(self, 
+                        *,
                         seed:int = None, 
                         transform = None, 
                         id_to_class:bool = False,
@@ -106,4 +110,4 @@ class StateFarmDataset(Dataset):
         fig.tight_layout()
         
     def __repr__(self) -> str:
-        return ' '.join(self.config['dataset']['name'].split('-')).title() + ' Dataset'
+        return (' '.join(self.config['dataset']['name'].split('-')) + f' {self.split} Dataset').title()
