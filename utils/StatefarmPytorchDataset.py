@@ -101,6 +101,8 @@ class StateFarmDataset(Dataset):
         # Loop through axes and display images
         for i, ax in enumerate(axes.flat):
             img = Image.open(self.imgs.iloc[i, 2])
+            if self.transform:
+                img = self.transform(img)
             ax.imshow(img)
             if id_to_class: ax.set_title(self.id_to_class[self.imgs.iloc[i, 1]])
             else: ax.set_title(self.imgs.iloc[i, 1])
