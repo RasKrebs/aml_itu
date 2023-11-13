@@ -21,3 +21,8 @@ dataset:
   
 outputs:
   path: ./outputs
+
+
+modelling:
+  batch_size: 32
+  epochs: 100
