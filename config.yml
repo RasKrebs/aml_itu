@@ -1,46 +1,28 @@
 # Project Configuration File
 # --------------------------
 
-dataset_local:
-  name: state-farm-distracted-driver-detection
-  data: ../state-farm-distracted-driver-detection/driver_imgs_list.csv
-  images:
-    train: ../state-farm-distracted-driver-detection/imgs/train
-    test: ../state-farm-distracted-driver-detection/imgs/test
-  class_mapping: 
-    c0: safe driving
-    c1: texting - right
-    c2: talking on the phone - right
-    c3: texting - left
-    c4: talking on the phone - left
-    c5: operating the radio
-    c6: drinking
-    c7: reaching behind
-    c8: hair and makeup
-    c9: talking to passenger
-  
+dataset:
+    name: state-farm-distracted-driver-detection
+    colab_path: /content/drive/MyDrive/aml-distracted-drivers-project
+    data: ../state-farm-distracted-driver-detection/driver_imgs_list.csv
+    images:
+        train: ../state-farm-distracted-driver-detection/imgs/train
+        test: ../state-farm-distracted-driver-detection/imgs/test
+    class_mapping: 
+        c0: safe driving
+        c1: texting - right
+        c2: talking on the phone - right
+        c3: texting - left
+        c4: talking on the phone - left
+        c5: operating the radio
+        c6: drinking
+        c7: reaching behind
+        c8: hair and makeup
+        c9: talking to passenger
 
-dataset_colab:
-  name: state-farm-distracted-driver-detection
-  data: /content/drive/MyDrive/aml-distracted-drivers-project/state-farm-distracted-driver-detection/driver_imgs_list.csv
-  images:
-    train: /content/drive/MyDrive/aml-distracted-drivers-project/state-farm-distracted-driver-detection/imgs/train
-    test: /content/drive/MyDrive/aml-distracted-drivers-project/state-farm-distracted-driver-detection/imgs/test
-  class_mapping: 
-    c0: safe driving
-    c1: texting - right
-    c2: talking on the phone - right
-    c3: texting - left
-    c4: talking on the phone - left
-    c5: operating the radio
-    c6: drinking
-    c7: reaching behind
-    c8: hair and makeup
-    c9: talking to passenger
 outputs:
-  path: ./outputs
+    path: ./outputs
 
-
-modelling:
-  batch_size: 32
-  epochs: 100
+modeling_params:
+    batch_size: 32
+    epochs: 100
