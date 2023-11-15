@@ -7,16 +7,16 @@ from torch.utils.data import Dataset
 from torchvision.io import read_image
 import os
 
-
 # Custom PyTorch Dataset Class
 class StateFarmDataset(Dataset):
-    def __init__(self, config, transform=None, target_transform=None):
+    def __init__(self, config, *, transform=None, target_transform = None, split = 'full'):
         """
         Custom PyTorch Dataset Class.
         Args:
             config (dict): configuration dictionary. Loaded using load_config() function from utils/helpers.py
             transform (callable, optional): Optional transform to be applied on a sample.
             target_transform (callable, optional): Optional transform to be applied on a label.
+            split (callable, optional): Optional specification of type of dataset. Can be either 'train', 'test' or None, which includes all.
         """
         
         # Ensuring directory corresponds to root of repo
@@ -24,10 +24,29 @@ class StateFarmDataset(Dataset):
             os.chdir('../')
 
         # Generating data variables
-        self.metadata = pd.read_csv(config['dataset']['data'])
-        self.id_to_class = config['dataset']['class_mapping']
+        self.config = config
+        self.test_subjects = ['p051', 'p014', 'p015', 'p035', 'p047']
+        self.metadata = pd.read_csv(self.config['dataset']['data'])
+        
+        # Extracting training or test data
+        if split == 'train':
+            self.metadata = self.metadata[-self.metadata['subject'].isin(self.test_subjects)]
+            self.split = 'Train'
+        elif split == 'test':
+            self.metadata = self.metadata[self.metadata['subject'].isin(self.test_subjects)]
+            self.split = 'Test'
+        elif split == 'full':
+            self.split = 'Full'
+        else:
+            raise ValueError('split argument must be either "train", "test" or "full", not {}'.format(split))
+
+        
+        # Class mappings
+        self.id_to_class = self.config['dataset']['class_mapping']
         self.metadata['target'] = self.metadata['classname'].map(self.id_to_class)
-        self.img_dir = config['dataset']['images']['train']
+        
+        # Path to img directory
+        self.img_dir = self.config['dataset']['images']['train']
         self.metadata['img_path'] = self.img_dir + '/' + self.metadata['classname'] + '/' + self.metadata['img']
         self.img_labels = self.metadata[['img', 'classname', 'img_path']]
         
@@ -63,6 +82,7 @@ class StateFarmDataset(Dataset):
         return image, label
     
     def display_classes(self, 
+                        *,
                         seed:int = None, 
                         transform = None, 
                         id_to_class:bool = False,
@@ -88,3 +108,6 @@ class StateFarmDataset(Dataset):
             ax.axis('off')
         # Apply tight layout
         fig.tight_layout()
+        
+    def __repr__(self) -> str:
+        return (' '.join(self.config['dataset']['name'].split('-')) + f' {self.split} Dataset').title()
