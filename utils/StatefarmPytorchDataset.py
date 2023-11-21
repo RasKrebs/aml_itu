@@ -8,8 +8,18 @@ from torchvision.io import read_image
 import os
 
 # Custom PyTorch Dataset Class
+# Library Import
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from torch.utils.data import Dataset
+from torchvision.io import read_image
+import os
+
+# Custom PyTorch Dataset Class
 class StateFarmDataset(Dataset):
-    def __init__(self, config, *, transform=None, target_transform = None, split = 'full'):
+    def __init__(self, config, *, transform=None, target_transform = None, split='none'):
         """
         Custom PyTorch Dataset Class.
         Args:
@@ -25,20 +35,21 @@ class StateFarmDataset(Dataset):
 
         # Generating data variables
         self.config = config
-        self.test_subjects = ['p051', 'p014', 'p015', 'p035', 'p047']
         self.metadata = pd.read_csv(self.config['dataset']['data'])
-        
+        self._validation_subjects = ['p022','p016','p066']
+        self._test_subjects = ['p024','p026','p049']
+        self._train_subjects = [x for x in self.metadata.subject.to_list() if x not in self._validation_subjects and x not in self._test_subjects]
+        self.split = split
         # Extracting training or test data
-        if split == 'train':
-            self.metadata = self.metadata[-self.metadata['subject'].isin(self.test_subjects)]
-            self.split = 'Train'
-        elif split == 'test':
-            self.metadata = self.metadata[self.metadata['subject'].isin(self.test_subjects)]
-            self.split = 'Test'
-        elif split == 'full':
-            self.split = 'Full'
-        else:
-            raise ValueError('split argument must be either "train", "test" or "full", not {}'.format(split))
+        if self.split == 'train':
+            self.metadata = self.metadata[self.metadata.subject.isin(self._train_subjects)]
+        elif self.split == 'validation' or self.split == 'val' or self.split == 'valid':
+            self.metadata = self.metadata[self.metadata.subject.isin(self._validation_subjects)]
+        elif self.split == 'test':
+            self.metadata = self.metadata[self.metadata['subject'].isin(self._test_subjects)]
+        elif self.split == 'none':
+            pass
+        else: raise ValueError('split argument must be either "train", "test", "validation"/"valid"/"val" or "none", not {}'.format(split))
 
         
         # Class mappings
@@ -101,6 +112,9 @@ class StateFarmDataset(Dataset):
         # Loop through axes and display images
         for i, ax in enumerate(axes.flat):
             img = Image.open(self.imgs.iloc[i, 2])
+                    # Apply transformations
+            if self.transform:
+                img = self.transform(img)
             ax.imshow(img)
             if id_to_class: ax.set_title(self.id_to_class[self.imgs.iloc[i, 1]])
             else: ax.set_title(self.imgs.iloc[i, 1])
