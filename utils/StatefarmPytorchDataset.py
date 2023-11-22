@@ -17,9 +17,16 @@ from torch.utils.data import Dataset
 from torchvision.io import read_image
 import os
 
+# Sparse Filtering
+from sklearn.datasets import make_classification
+from sklearn.metrics import accuracy_score
+from sklearn.svm import SVC
+from .SparseFilter import *
+
+
 # Custom PyTorch Dataset Class
 class StateFarmDataset(Dataset):
-    def __init__(self, config, *, transform=None, target_transform = None, split='none'):
+    def __init__(self, config, *, transform=None, target_transform = None, split='none', apply_sparse_filtering=False):
         """
         Custom PyTorch Dataset Class.
         Args:
@@ -64,6 +71,16 @@ class StateFarmDataset(Dataset):
         # Data transformations
         self.transform = transform
         self.target_transform = target_transform
+        self.apply_sparse_filtering = apply_sparse_filtering
+
+        if self.apply_sparse_filtering:
+            input_dim = 921600 #flattened_data.shape[1] # [15646, 921600]
+            output_dim = 921600  # Set the desired output dimension
+            self.sparse_filter_model = SparseFilter(input_dim, output_dim).to(device)
+
+            # Load the model from os.getcwd() + '/outputs/SparseFilterWeights/sparse_filter_model.pth'
+            self.sparse_filter_model.load_state_dict(torch.load(os.getcwd() + '/outputs/SparseFilterWeights/sparse_filter_model_weights_n25.pth'))
+
 
     # Returns length of dataset
     def __len__(self):
@@ -85,10 +102,37 @@ class StateFarmDataset(Dataset):
         label = self.img_labels.iloc[idx, 1]
         
         # Apply transformations
+        if self.apply_sparse_filtering:
+            #image = image.float()
+            #image = image.reshape(-1)  # Flatten the data
+            #image = self.sparse_filter_model(image.to(device))  # Apply sparse filtering
+            #image = image.view_as(self.image[idx])  # Reshape back if necessary
+
+            # Apply Sparse Filtering Transformation to Data and set image to on device
+            X_flattened = image.float().reshape(-1, 921600)
+            X_flattened = X_flattened.to(device)
+            model = self.sparse_filter_model.to(device)
+            
+            with torch.no_grad():
+             
+             transformed_X = torch.matmul(X_flattened, model.weights).detach().squeeze()
+             print(transformed_X.size())
+             # print shape
+             print(transformed_X.shape)
+             # transfrom back to numpy and print shape
+             #transformed_X = transformed_X.cpu().numpy()
+             # print shape
+             #print(transformed_X.shape)
+             # transfrom back to image 480x640
+             #image = transformed_X.reshape(480, 640)
+             # transfrom back to image 3x480x640
+            image = transformed_X.reshape(3, 480, 640)
+
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
+        
         
         return image, label
     
@@ -125,3 +169,6 @@ class StateFarmDataset(Dataset):
         
     def __repr__(self) -> str:
         return (' '.join(self.config['dataset']['name'].split('-')) + f' {self.split} Dataset').title()
+    
+
+
