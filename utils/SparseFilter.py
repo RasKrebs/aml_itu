@@ -96,22 +96,6 @@ class SparseFilter(nn.Module):
         fourth = third / torch.sqrt(torch.sum(third ** 2, axis=1)[:, None] + self.epsilon)
         return torch.sum(fourth)
 
-# Training Sparse Filter
-def train_sparse_filter(data, input_dim, output_dim, learning_rate=0.01, num_epochs=100):
-    model = SparseFilter(input_dim, output_dim)
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
-    for epoch in range(num_epochs):
-        optimizer.zero_grad()
-        loss = model(data)  # Forward pass
-        loss.backward()  # Compute gradients
-        optimizer.step()  # Update weights
-
-        if epoch % 10 == 0:
-            print(f'Epoch {epoch}, Loss: {loss.item()}')
-
-    return model
-
 # Function to Load Weights and Create Model
 def load_sparse_filter_model(input_dim, output_dim, model_path):
     model = SparseFilter(input_dim, output_dim)

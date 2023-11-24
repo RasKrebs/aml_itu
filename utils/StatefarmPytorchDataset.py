@@ -74,12 +74,11 @@ class StateFarmDataset(Dataset):
         self.apply_sparse_filtering = apply_sparse_filtering
 
         if self.apply_sparse_filtering:
-            input_dim = 921600 #flattened_data.shape[1] # [15646, 921600]
-            output_dim = 921600  # Set the desired output dimension
-            self.sparse_filter_model = SparseFilter(input_dim, output_dim).to(device)
-
-            # Load the model from os.getcwd() + '/outputs/SparseFilterWeights/sparse_filter_model.pth'
-            self.sparse_filter_model.load_state_dict(torch.load(os.getcwd() + '/outputs/SparseFilterWeights/sparse_filter_model_weights_n25.pth'))
+            input_dim = 126*168
+            output_dim = 126*168
+            self.model = SparseFilter(input_dim, output_dim)
+            # Load the sparse filter model
+            self.model.load_state_dict(torch.load(os.getcwd() + '/outputs/SparseFilterModel/sparse_filter_model_try3_50_epochs.pth', map_location=torch.device(device)))
 
 
     # Returns length of dataset
@@ -102,34 +101,28 @@ class StateFarmDataset(Dataset):
         label = self.img_labels.iloc[idx, 1]
         
         # Apply transformations
-        if self.apply_sparse_filtering:
-            #image = image.float()
-            #image = image.reshape(-1)  # Flatten the data
-            #image = self.sparse_filter_model(image.to(device))  # Apply sparse filtering
-            #image = image.view_as(self.image[idx])  # Reshape back if necessary
-
-            # Apply Sparse Filtering Transformation to Data and set image to on device
-            X_flattened = image.float().reshape(-1, 921600)
-            X_flattened = X_flattened.to(device)
-            model = self.sparse_filter_model.to(device)
-            
-            with torch.no_grad():
-             
-             transformed_X = torch.matmul(X_flattened, model.weights).detach().squeeze()
-             print(transformed_X.size())
-             # print shape
-             print(transformed_X.shape)
-             # transfrom back to numpy and print shape
-             #transformed_X = transformed_X.cpu().numpy()
-             # print shape
-             #print(transformed_X.shape)
-             # transfrom back to image 480x640
-             #image = transformed_X.reshape(480, 640)
-             # transfrom back to image 3x480x640
-            image = transformed_X.reshape(3, 480, 640)
-
         if self.transform:
             image = self.transform(image)
+
+            # If the image tensor is already a float32 tensor, you can skip the cloning and detaching.
+            if image.dtype != torch.float32:
+                image = image.clone().detach().to(dtype=torch.float32)
+
+            if self.apply_sparse_filtering:
+                with torch.no_grad():
+                    transformed_image = torch.matmul(image, self.model.weights).detach()
+                    image = transformed_image.reshape(1, 126, 168)
+                    
+                    # If you just reshaped the tensor, there's no need to clone and detach again.
+                    if image.dtype != torch.float32:
+                        image = image.to(dtype=torch.float32)
+            else:
+                image = image.reshape(1, 126, 168)
+                if image.dtype != torch.float32:
+                    image = image.to(dtype=torch.float32)
+
+                
+                
         if self.target_transform:
             label = self.target_transform(label)
         
@@ -159,6 +152,12 @@ class StateFarmDataset(Dataset):
                     # Apply transformations
             if self.transform:
                 img = self.transform(img)
+                if self.apply_sparse_filtering:
+                    with torch.no_grad():
+                        transformed_image  = torch.matmul(img, self.model.weights).detach()
+                        img = transformed_image.reshape(126, 168)
+                else:
+                    img = img.reshape(126, 168)
             ax.imshow(img)
             if id_to_class: ax.set_title(self.id_to_class[self.imgs.iloc[i, 1]])
             else: ax.set_title(self.imgs.iloc[i, 1])
