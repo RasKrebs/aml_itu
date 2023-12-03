@@ -43,7 +43,7 @@ class StateFarmDataset(Dataset):
         # Generating data variables
         self.config = config
         self.metadata = pd.read_csv(self.config['dataset']['data'])
-        self._validation_subjects = ['p022','p016','p066']
+        self._validation_subjects = ['p014','p015','p067']
         self._test_subjects = ['p024','p026','p049']
         self._train_subjects = [x for x in self.metadata.subject.to_list() if x not in self._validation_subjects and x not in self._test_subjects]
         self.split = split
@@ -103,25 +103,6 @@ class StateFarmDataset(Dataset):
         # Apply transformations
         if self.transform:
             image = self.transform(image)
-
-            # If the image tensor is already a float32 tensor, you can skip the cloning and detaching.
-            if image.dtype != torch.float32:
-                image = image.clone().detach().to(dtype=torch.float32)
-
-            if self.apply_sparse_filtering:
-                with torch.no_grad():
-                    transformed_image = torch.matmul(image, self.model.weights).detach()
-                    image = transformed_image.reshape(1, 126, 168)
-                    
-                    # If you just reshaped the tensor, there's no need to clone and detach again.
-                    if image.dtype != torch.float32:
-                        image = image.to(dtype=torch.float32)
-            else:
-                image = image.reshape(1, 126, 168)
-                if image.dtype != torch.float32:
-                    image = image.to(dtype=torch.float32)
-
-                
                 
         if self.target_transform:
             label = self.target_transform(label)
@@ -152,12 +133,8 @@ class StateFarmDataset(Dataset):
                     # Apply transformations
             if self.transform:
                 img = self.transform(img)
-                if self.apply_sparse_filtering:
-                    with torch.no_grad():
-                        transformed_image  = torch.matmul(img, self.model.weights).detach()
-                        img = transformed_image.reshape(126, 168)
-                else:
-                    img = img.reshape(126, 168)
+                # reshape the channels to be the first dimension
+                img = img.permute(1, 2, 0)
             ax.imshow(img)
             if id_to_class: ax.set_title(self.id_to_class[self.imgs.iloc[i, 1]])
             else: ax.set_title(self.imgs.iloc[i, 1])
