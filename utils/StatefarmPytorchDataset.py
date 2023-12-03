@@ -95,7 +95,6 @@ class StateFarmDataset(Dataset):
     def display_classes(self, 
                         *,
                         seed:int = None, 
-                        transform = None, 
                         id_to_class:bool = False,
                         figsize:tuple =(15, 10)):
         """Function for displaying randomg samples from each class"""
@@ -112,9 +111,10 @@ class StateFarmDataset(Dataset):
         # Loop through axes and display images
         for i, ax in enumerate(axes.flat):
             img = Image.open(self.imgs.iloc[i, 2])
-                    # Apply transformations
+            # Apply transformations
             if self.transform:
                 img = self.transform(img)
+            
             ax.imshow(img)
             if id_to_class: ax.set_title(self.id_to_class[self.imgs.iloc[i, 1]])
             else: ax.set_title(self.imgs.iloc[i, 1])
