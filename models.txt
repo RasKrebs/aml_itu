@@ -1,0 +1,35 @@
+This text file is to document well performing models for later use
+
+Model Name		| 	Epoch		| Acurracy Validation		| Accuracy Test		| #-Params	| Img Size	| Comments
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 			| 			| 				| 			| 		| 		| CosineAnnealingLR, EarlyStopping, Adagrad Optimizer, (LR = 0.01)
+TinyVGG_500k		|	   25		|		58%		|	   75%		|	500k	|    48, 64	| weight decay at 1e-4 + ColorJitter(brightness=0.25, contrast=0.25, 
+			|			|				|			|		|		| saturation=0.25, hue=0.25)
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------								  
+TinyVGG_500k		| 	   18	 	| 		57%		| 	   73%		| 	500k	|    48, 64	| Same as above, just earlier epoch
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EfficientNetAdagrad (b0)| 	   9		| 		42%		| 	   58%		|      	2m	|    93, 124	| Same as the first one, just tried on efficientNet architecture
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			| 	  		|				|	   		|		|    		| SGD with lr=0.001, momentum=0.9, weight_decay=1e-4, nesterov=True. Basic
+EfficientNet_b0_SGD	|	   20		|		63%		|	   72%		|	4m	|    224, 224	| augmentations, i.e. RandomRotation, RandomHorizontalFlip, Increased 
+			|			|				|			|		|		| Dropout over regular b0, squared images at 224 + LR Reducer on Plateau
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			| 	  		|				|	   		|		|    		| Same stuff as above, despite optimizer, which is AdamW with default
+EfficientNet_b0_AdamW	|	   5		|		73%		|	   72%		|	4m	|    224, 224	| arguments. Otherwise augmentation, dropout etc. remained the same
+			|			|				|			|		|		| 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EfficientNet_b0_AdamW	|	   10		|		73%		|	   74%		|	4m	|    224, 224	| Same as above, just later epoch
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Meeting Notes
+* The above training definitely indicates towards unlucky Split
+	- consider changing the subject split in a cross-validation method
+	- Deep learning is expensive and therefore we now have very big test datasets to ensure that it isn't an unlucky split
+	- Try switching test and validation for training for EfficientNet_b0_AdamW
+
+* Could we decrease the training data size? and increase the two others
+
+* This kind of problem shows the benefits of pre-trained model
+	* 
