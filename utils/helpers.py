@@ -1,5 +1,6 @@
 # Library import
 import os
+import numpy as np
 import yaml
 
 """Methods in this file are used to help with the project. Any function applied frequently is best stored here"""
@@ -33,3 +34,37 @@ def load_config(colab = False) -> dict:
         config['dataset']['images']['test'] = config['dataset']['images']['test'].replace('..', colab_path)
 
     return config
+
+
+class weighted_prediction:
+    def __init__(self, config, n=10):
+        """Class takes pytorch predictions as input and outputs a weighted prediction over the last n frames"""
+        self.n = n
+        self.config = config
+        self.predictions = None
+        self.weighted_predictions = []
+
+    # Append prediction to list
+    def __call__(self, prediction):
+        """Performs the weighted average"""
+        # Append prediction to list
+        if self.predictions is None:
+            self.predictions = prediction.detach().cpu().numpy()
+        else:
+            self.predictions = np.vstack((self.predictions, prediction.detach().cpu().numpy()))
+
+        # If their arent enought predictions, return nothing
+        if self.predictions.shape[0] < self.n:
+            self.weighted_predictions.append(None)
+            return None
+        
+        # Else return the weighted prediction over the last n frames
+        else:
+            self.weighted_predictions.append(np.argmax(self.predictions[-self.n:, :].mean(axis=0)))
+            return self.weighted_predictions[-1]
+            
+    def map_labels(self, prediction):
+        """Maps the prediction to the correct class"""
+        if prediction is None:
+            return 'Out of scope'
+        return self.config['dataset']['class_mapping'][f'c{prediction}']

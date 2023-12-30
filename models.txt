@@ -12,7 +12,7 @@ EfficientNetAdagrad (b0)| 	   9		| 		42%		| 	   58%		|      	2m	|    93, 124	| S
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			| 	  		|				|	   		|		|    		| SGD with lr=0.001, momentum=0.9, weight_decay=1e-4, nesterov=True. Basic
 EfficientNet_b0_SGD	|	   20		|		63%		|	   72%		|	4m	|    224, 224	| augmentations, i.e. RandomRotation, RandomHorizontalFlip, Increased 
-			|			|				|			|		|		| Dropout over regular b0, squared images at 224 + LR Reducer on Plateau
+			|			|				|			|		|		| Dropout over regular b0, squared images at 224 + LR Reducer on Plateau	
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			| 	  		|				|	   		|		|    		| Same stuff as above, despite optimizer, which is AdamW with default
 EfficientNet_b0_AdamW	|	   5		|		73%		|	   72%		|	4m	|    224, 224	| arguments. Otherwise augmentation, dropout etc. remained the same
@@ -24,7 +24,7 @@ EfficientNet_b0_AdamW	|	   10		|		73%		|	   74%		|	4m	|    224, 224	| Same as ab
 
 
 Meeting Notes
-* The above training definitely indicates towards unlucky Split
+* The above training indicates towards unlucky Split
 	- consider changing the subject split in a cross-validation method
 	- Deep learning is expensive and therefore we now have very big test datasets to ensure that it isn't an unlucky split
 	- Try switching test and validation for training for EfficientNet_b0_AdamW
