@@ -33,7 +33,7 @@ def image_transformer(img,
     # Image augmentations - apply default if none is specified
     if image_augmentations == 'default':
         image_augmentations = v2.Compose([T.Resize(img_sizes[size], antialias=True),
-                                    v2.ToDtype(torch.float32, scale=True)])
+                                          v2.ToDtype(torch.float32, scale=True)])
     
     return image_augmentations(img)
     
