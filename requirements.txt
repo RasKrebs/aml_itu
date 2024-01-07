@@ -1,8 +1,0 @@
-pillow==9.4.0
-opencv-python==4.8.1.78
-matplotlib==3.7.1
-numpy==1.24.3
-pandas==1.5.3
-torch==2.1.0.dev20230729
-torchvision==0.16.0.dev20230729
-pyyaml

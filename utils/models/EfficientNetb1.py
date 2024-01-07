@@ -4,7 +4,7 @@ from torch import nn
 import torch
 
     
-def EfficientNet_b1(model_load_path):
+def EfficientNet_b1(model_load_path=None):
     # Load the model from timm
     efficientb1 = timm.create_model('efficientnet_b1', pretrained=False)
     
@@ -15,7 +15,10 @@ def EfficientNet_b1(model_load_path):
             nn.Linear(num_ftrs, 10)
             )
 
-    # Load the model weights
-    efficientb1.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
-    
-    return efficientb1
+    if model_load_path is None:
+        return efficientb1
+    else:
+        # Load the model weights
+        efficientb1.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
+        
+        return efficientb1

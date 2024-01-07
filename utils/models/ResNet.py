@@ -7,7 +7,7 @@ torchvision.disable_beta_transforms_warning()
 
 
     
-def ResNet(model_load_path):
+def ResNet(model_load_path=None):
     # Load the model from pytorch
     resnet = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
     
@@ -17,8 +17,11 @@ def ResNet(model_load_path):
             nn.Dropout(p=0.5),
             nn.Linear(in_features=512, out_features=10))
 
-    # Load the model weights
-    resnet.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
-    
-    # Return the model
-    return resnet
+    if model_load_path is None:
+        return resnet
+    else:
+        # Load the model weights
+        resnet.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
+        
+        # Return the model
+        return resnet

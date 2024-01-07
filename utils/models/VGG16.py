@@ -5,7 +5,7 @@ from torch import nn
 import torchvision
 torchvision.disable_beta_transforms_warning()
     
-def VGG16(model_load_path):
+def VGG16(model_load_path=None):
     # Load the model from pytorch
     vgg_16 = torchvision.models.vgg16(weights=torchvision.models.VGG16_Weights.DEFAULT)
     
@@ -16,7 +16,11 @@ def VGG16(model_load_path):
                         nn.Dropout(0.6),
                         nn.Linear(256, 10))
     
-    # Load the model weights
-    vgg_16.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
-    
-    return vgg_16
+    if model_load_path is None:
+        return vgg_16
+    else:
+        
+        # Load the model weights
+        vgg_16.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
+        
+        return vgg_16
