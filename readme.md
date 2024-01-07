@@ -17,7 +17,7 @@ aml_itu: Main project
     - `cv_result_explorer.ipynb`: Explores results from cross validation test
     - `data_exploration.ipynb`: Explores and visualize the data
     - `data_exploration.ipynb`: Explores and visualize the data
-- outputs/: Folder for outputs, mainly models in `.pt` format, but also results from CV tests.
+- outputs/: Folder for outputs, mainly models in `.pt` format, but also results from CV tests. Note, some folders are missing for certain models, which is due to the size limitations by GitHub. Refer to the project attached zip file, which includes these.
 
 state-farm-distracted-driver-detection: dataset folder 
 - `driver_imgs_list.csv`: Image metadata dataset, containing information about classes, subjects, files etc.
