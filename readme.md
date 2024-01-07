@@ -63,7 +63,7 @@ To apply and run the model, use the associated predict file.
 $ python predict.py 
     --model: Specifies which model to use. Either tinyvgg, efficientnetb0, efficientnetb1, vgg16 or resnet
     --size Image size for transformation: Either X_SMALL, used for TinyVGG or L_SQUARED for all ohter models
-    --seconds Number of seconds to run inference: Default is 10
+    --seconds Number of seconds to run program: Default is 10
     --weighted_frames Determines how many frames to use weigh and use for prediction. Defeault is 10
     --source webcam or filepath to picture. If file path, seconds and weighted frames are irrelvant. Default is webcam
     --device gpu or cpu. If gpu, file will automatically determine if cuda or mps is available and use that. Default is GPU.
