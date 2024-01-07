@@ -7,8 +7,9 @@ from torchvision.transforms import v2
 
 
 def image_transformer(img, 
-                      image_augmentations = 'default', 
-                      size='L'):
+                      alt_augmentation = False, 
+                      size='L_SQUARED',
+                      return_augmentation_object = False):
     """Apply dataaugmentation and load image into dataloader for inference
 
         args: 
@@ -30,10 +31,17 @@ def image_transformer(img,
     # Checking that size exists on list
     assert size in ['L_SQUARED', 'L','M','S'], f"Image size must be one of: S ({img_sizes['S']}), M ({img_sizes['M']}), L ({img_sizes['L']}) or L_SQUARED ({img_sizes['L_SQUARED']})"
     
-    # Image augmentations - apply default if none is specified
-    if image_augmentations == 'default':
-        image_augmentations = v2.Compose([T.Resize(img_sizes[size], antialias=True),
+    # Image augmentations
+    image_augmentations = v2.Compose([T.Resize(img_sizes[size], antialias=True),
                                           v2.ToDtype(torch.float32, scale=True)])
     
-    return image_augmentations(img)
+    # Append alternative augmentations
+    if alt_augmentation:
+        image_augmentations.transforms.append(alt_augmentation)
+    
+    # If return_augmentation_object is True, return the augmentation object
+    if return_augmentation_object:
+        return image_augmentations
+    else:
+        return image_augmentations(img)
     
