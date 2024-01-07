@@ -9,23 +9,23 @@ A repository for everything related to the exam project of Advanced Machine Lear
 The main files and subfolders in this repository, are structured as follows:
 
 aml_itu: Main project
-| - `predict.py`: A prediction pipeline script, that will access webcamera and predict based on this. Description on how to use this is provided at the bottom.
-| - `test.ipynb`: Notebook, in which all models are tested on the test set. Additionally, a GradCam analysis is carried out.
-| - utils/: Folder for helper functions and other project-specific modules
-| - notebooks/: Folder that contains all notebooks used for training of our models
-    | - archive/: Archived models notebooks such as MobileNet and Mnas.
-    | - `cv_result_explorer.ipynb`: Explores results from cross validation test
-    | - `data_exploration.ipynb`: Explores and visualize the data
-    | - `data_exploration.ipynb`: Explores and visualize the data
-| - outputs/: Folder for outputs, mainly models in `.pt` format, but also results from CV tests.
+- `predict.py`: A prediction pipeline script, that will access webcamera and predict based on this. Description on how to use this is provided at the bottom.
+- `test.ipynb`: Notebook, in which all models are tested on the test set. Additionally, a GradCam analysis is carried out.
+- utils/: Folder for helper functions and other project-specific modules
+- notebooks/: Folder that contains all notebooks used for training of our models
+    - archive/: Archived models notebooks such as MobileNet and Mnas.
+    - `cv_result_explorer.ipynb`: Explores results from cross validation test
+    - `data_exploration.ipynb`: Explores and visualize the data
+    - `data_exploration.ipynb`: Explores and visualize the data
+- outputs/: Folder for outputs, mainly models in `.pt` format, but also results from CV tests.
 
 state-farm-distracted-driver-detection: dataset folder 
-| - `driver_imgs_list.csv`: Image metadata dataset, containing information about classes, subjects, files etc.
-| - imgs/: 
-    | - train/: Subfolder with training images
-        | - c0/: Training images in class c0
+- `driver_imgs_list.csv`: Image metadata dataset, containing information about classes, subjects, files etc.
+- imgs/: 
+    - train/: Subfolder with training images
+        - c0/: Training images in class c0
         ....
-        | - c9/: Training images in class c9
+        - c9/: Training images in class c9
 
 
 
